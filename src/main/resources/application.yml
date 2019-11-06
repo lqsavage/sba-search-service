@@ -1,0 +1,169 @@
+spring:
+    profiles:
+        active: local
+---
+spring:
+    profiles: local
+    application:
+        name: '@project.name@'
+    datasource:
+        driver-class-name: com.mysql.jdbc.Driver
+        password: pass@word1
+        tomcat:
+            initial-size: 15
+            max-active: 50
+            max-idle: 15
+            max-wait: 20000
+            min-idle: 8
+        url: jdbc:mysql://localhost:3306/search_service?useSSL=false
+        username: root
+    jpa:
+        hibernate:
+            ddl-auto: update
+        properties:
+            hibernate:
+                dialect: org.hibernate.dialect.MySQL5Dialect
+                format_sql: true
+        show-sql: true
+    sleuth:
+        sampler:
+            probability: 1.0
+    zipkin:
+        base-url: http://localhost:9090/
+info:
+    app:
+        artifactId: '@project.artifactId@'
+        description: '@project.description@'
+        groupId: '@project.groupId@'
+        name: '@project.name@'
+        version: '@project.version@'
+server:
+    host: localhost
+    port: 8065
+feign:
+    hystrix:
+        enabled: true
+eureka:
+    client:
+        enabled: true
+        serviceUrl:
+            defaultZone: http://${server.host}:8761/eureka/
+    instance:
+        prefer-ip-address: true
+        healthCheckUrl: http://${server.host}:${server.port}/actuator/health
+        homePageUrl: http://${server.host}:${server.port}/
+        instance-id: ${spring.application.name}:${server.port}
+        leaseExpirationDurationInSeconds: 300
+        leaseRenewalIntervalInSeconds: 300
+        statusPageUrl: http://${server.host}:${server.port}/actuator/info
+    environment: dev
+logging:
+    level:
+        org:
+            hibernate:
+                SQL: DEBUG
+                type: TRACE
+            springframework:
+                web:
+                    servlet:
+                        DispatcherServlet: DEBUG
+management:
+    endpoint:
+        health:
+            show-details: always
+        shutdown:
+            enabled: true
+    endpoints:
+        web:
+            exposure:
+                include: '*'
+    health:
+        db:
+            enabled: true
+        defaults:
+            enabled: true
+        diskspace:
+            enabled: true
+
+---
+spring:
+    profiles: k8s
+    application:
+        name: '@project.name@'
+    datasource:
+        driver-class-name: com.mysql.jdbc.Driver
+        password: pass@word1
+        tomcat:
+            initial-size: 15
+            max-active: 50
+            max-idle: 15
+            max-wait: 20000
+            min-idle: 8
+        url: jdbc:mysql://sba-mysql:3306/search_service?useSSL=false
+        username: root
+    jpa:
+        hibernate:
+            ddl-auto: update
+        properties:
+            hibernate:
+                dialect: org.hibernate.dialect.MySQL5Dialect
+                format_sql: true
+        show-sql: true
+    sleuth:
+        sampler:
+            probability: 1.0
+    zipkin:
+        base-url: http://zipkin-server:10002/
+info:
+    app:
+        artifactId: '@project.artifactId@'
+        description: '@project.description@'
+        groupId: '@project.groupId@'
+        name: '@project.name@'
+        version: '@project.version@'
+server:
+    port: 10005
+feign:
+    hystrix:
+        enabled: true
+eureka:
+    client:
+        enabled: true
+        serviceUrl:
+            defaultZone: http://eureka-server:10001/eureka/
+    instance:
+        prefer-ip-address: true
+        healthCheckUrl: http://${spring.application.name}:${server.port}/actuator/health
+        homePageUrl: http://${spring.application.name}:${server.port}/
+        instance-id: ${spring.application.name}:${server.port}
+        leaseExpirationDurationInSeconds: 300
+        leaseRenewalIntervalInSeconds: 300
+        statusPageUrl: http://${spring.application.name}:${server.port}/actuator/info
+    environment: k8s
+logging:
+    level:
+        org:
+            hibernate:
+                SQL: DEBUG
+                type: TRACE
+            springframework:
+                web:
+                    servlet:
+                        DispatcherServlet: DEBUG
+management:
+    endpoint:
+        health:
+            show-details: always
+        shutdown:
+            enabled: true
+    endpoints:
+        web:
+            exposure:
+                include: '*'
+    health:
+        db:
+            enabled: true
+        defaults:
+            enabled: true
+        diskspace:
+            enabled: true
